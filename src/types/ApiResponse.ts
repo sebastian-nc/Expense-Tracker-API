@@ -1,5 +1,5 @@
 export interface ApiSucess<T> {
-    status: 'sucess';
+    status: 'success';
     data: T;
 }
 

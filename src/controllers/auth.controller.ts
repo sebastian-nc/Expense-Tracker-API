@@ -1,37 +1,36 @@
 import type { Request, Response } from 'express';
+import authService from '../services/auth.service.js';
+import type { LoginInput } from '../schemas/auth.schema.js';
+import type { ApiSucess } from '../types/ApiResponse.js';
+import { catchAsync } from '../utils/catchAsync.js';
 
-import catchAsync from '../utils/cathAsync';
-import { AppError } from '../errors/AppError';
-import { ApiSucess } from '../types/ApiResponse';
+type LoginResponse = ApiSucess<{ token: string }>;
 
-export const register = catchAsync(async (req: Request, res: Response<ApiSucess<string>>) => {
-    const { email, password, name } = req.body;
+export const login = catchAsync(async (req: Request<{}, {}, LoginInput['body']>, res: Response<LoginResponse>) => {
+    const { email, password } = req.body;
+    const token = await authService.login(email, password);
 
-    if (!email || !password) {
-        throw new AppError('Email y contraseña son obligatorios', 400)
-    }
     res.json({
-        status: 'sucess',
-        data: 'OK'
-    })
+        status: 'success',
+        data: { token }
+    });
+});
+
+type RegisterResponse = ApiSucess<{
+    id: number;
+    email: string;
+    name: string | null;
+    created_at: Date;
+}>;
+
+export const register = catchAsync(async (req: Request, res: Response<RegisterResponse>) => {
+    const { email, password, name } = req.body;
+    const newUser = await authService.register(name, email, password);
+
+    res.status(201).json({
+        status: 'success',
+        data: newUser
+    });
 
 });
 
-export const login = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-
-    // Validación básica
-    if (!email || !password) {
-        throw new AppError('Email y contraseña son obligatorios', 400);
-    }
-    // try {
-
-    //     const user = await authService.loginUser(email, password);
-
-    //     res.status(200).json({ message: 'Login exitoso', user });
-
-    // } catch (error: any) {
-    //     console.error(error);
-    //     res.status(500).json({ message: 'Error interno del servidor' });
-    // }
-}

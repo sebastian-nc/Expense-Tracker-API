@@ -8,7 +8,7 @@ export const errorController = (err: Error, _req: Request, res: Response<ApiErro
     if (err instanceof AppError) {
         const status = `${err.statusCode}`.startsWith('4') ? 'error' : 'fatal';
         const message = err.message;
-        res.status(err.statusCode).json({
+        return res.status(err.statusCode).json({
             status,
             message
         })

@@ -5,7 +5,10 @@ export class AppError extends Error {
     constructor(message: string, code: number = 500) {
         super(message);
         this.statusCode = code;
-        this.stack = new Error().stack
+        const errorStack = new Error().stack;
+        if (errorStack) {
+            this.stack = errorStack;
+        }
     }
 }
 

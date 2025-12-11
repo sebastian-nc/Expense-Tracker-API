@@ -12,12 +12,12 @@ export const securityMiddleware = async (req: Request, res: Response, next: Next
 
     const token = authHeader.split(" ")[1] as string;
 
-
     try {
-        const result: { id: string, exp: number } = await verifyToken(token);
-        req.headers.userId = result.id;
+        const result: { id: number, exp: number } = await verifyToken(token);
+        req.userId = result.id;
         next();
     } catch (error) {
+
         let message = "Unauthorized";
 
         if (error instanceof jwt.JsonWebTokenError) message = "Invalid token";
